@@ -9,5 +9,6 @@ This file records notable user-visible changes to Weave Adapters. It follows the
 - Apache-2.0 repository licensing and independent-module workspace metadata.
 - Repository checks, module-zip license verification, and development CI that operate only on existing Adapter modules.
 - The `memory` reference Compiler with typed fields, immutable semantic configuration, all standard operators and Boolean groups, value/null/missing match-set semantics, Native and Expr support, field capability discovery, differential fuzzing, runnable examples, benchmark baselines, and shared `compilertest` coverage.
+- The `gormgen` Compiler with locked GORM Gen/GORM compatibility, all standard operators and Boolean groups, SQL NULL totalization, literal text escaping, Native/Expr support, pure-column and value-type discovery, immutable FieldSpec/registry configuration, fixed parameterized templates, real generated-DAO usage, benchmark baselines, and real MySQL/PostgreSQL shared semantic coverage.
 
 [Unreleased]: https://github.com/imbrooklyn/weave-adapters/commits/main

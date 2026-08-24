@@ -8,8 +8,8 @@ permissions:
   contents: read
 
 jobs:
-  verify-memory:
-    name: Memory development verification
+  verify-modules:
+    name: Adapter development verification
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -37,7 +37,7 @@ jobs:
           workspace_directory="$RUNNER_TEMP/weave-adapters-workspace"
           mkdir -p "$workspace_directory"
           cd "$workspace_directory"
-          go work init "$GITHUB_WORKSPACE/_ci/weave" "$GITHUB_WORKSPACE/memory"
+          go work init "$GITHUB_WORKSPACE/_ci/weave" "$GITHUB_WORKSPACE/gormgen" "$GITHUB_WORKSPACE/memory"
           printf 'GOWORK=%s/go.work\n' "$workspace_directory" >> "$GITHUB_ENV"
 
       - name: Show Go version
@@ -48,6 +48,21 @@ jobs:
 
       - name: Check formatting, tests, and vet
         run: ./scripts/verify.sh
+
+      - name: Regenerate and verify the GORM Gen fixture
+        working-directory: gormgen
+        run: |
+          go generate ./...
+          git diff --exit-code -- internal/fixture/query
+          go test ./internal/fixture/usage
+
+      - name: Run the GORM Gen race detector
+        working-directory: gormgen
+        run: go test -race ./...
+
+      - name: Compile and smoke-test GORM Gen benchmarks
+        working-directory: gormgen
+        run: go test -run '^$' -bench . -benchtime=1x
 
       - name: Run the race detector
         working-directory: memory
@@ -60,3 +75,69 @@ jobs:
       - name: Compile and smoke-test memory benchmarks
         working-directory: memory
         run: go test -run '^$' -bench . -benchtime=1x
+
+  verify-gormgen-integration:
+    name: GORM Gen real backend semantics
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GOTOOLCHAIN: local
+    services:
+      mysql:
+        image: mysql@sha256:d58ac93387f644e4e040c636b8f50494e78e5afc27ca0a87348b2f577da2b7ff
+        env:
+          MYSQL_ROOT_PASSWORD: weave-gormgen-ci
+          MYSQL_DATABASE: weave_gormgen
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping --host=127.0.0.1 --user=root --password=weave-gormgen-ci --silent"
+          --health-interval 2s
+          --health-timeout 5s
+          --health-retries 30
+      postgresql:
+        image: postgres@sha256:ef9d1517df69c4d27dbb9ddcec14f431a2442628603f4e9daa429b92ae6c3cd1
+        env:
+          POSTGRES_USER: weave
+          POSTGRES_PASSWORD: weave-gormgen-ci
+          POSTGRES_DB: weave_gormgen
+          POSTGRES_INITDB_ARGS: --locale=C --encoding=UTF8
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready --username=weave --dbname=weave_gormgen"
+          --health-interval 2s
+          --health-timeout 5s
+          --health-retries 30
+    steps:
+      - name: Check out Adapter repository
+        uses: actions/checkout@v7
+
+      - name: Check out the pinned Weave core revision
+        uses: actions/checkout@v7
+        with:
+          repository: imbrooklyn/weave
+          ref: 14cad085c9c7ac12360cb1136651f9c2732aeccb
+          path: _ci/weave
+
+      - name: Set up Go 1.27
+        uses: actions/setup-go@v7
+        with:
+          go-version: "1.27.0"
+          cache: false
+
+      - name: Create an isolated dependency workspace
+        shell: bash
+        run: |
+          workspace_directory="$RUNNER_TEMP/weave-adapters-workspace"
+          mkdir -p "$workspace_directory"
+          cd "$workspace_directory"
+          go work init "$GITHUB_WORKSPACE/_ci/weave" "$GITHUB_WORKSPACE/gormgen"
+          printf 'GOWORK=%s/go.work\n' "$workspace_directory" >> "$GITHUB_ENV"
+
+      - name: Run generated-DAO semantics on real MySQL and PostgreSQL
+        working-directory: gormgen
+        env:
+          WEAVE_GORMGEN_MYSQL_DSN: root:weave-gormgen-ci@tcp(127.0.0.1:3306)/weave_gormgen?charset=utf8mb4&parseTime=true&loc=UTC
+          WEAVE_GORMGEN_POSTGRES_DSN: host=127.0.0.1 port=5432 user=weave password=weave-gormgen-ci dbname=weave_gormgen sslmode=disable
+        run: go test -race -tags=integration -count=1 -run '^TestIntegrationProfiles$' -v .
