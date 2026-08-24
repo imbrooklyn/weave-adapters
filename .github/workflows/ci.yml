@@ -37,7 +37,8 @@ jobs:
           workspace_directory="$RUNNER_TEMP/weave-adapters-workspace"
           mkdir -p "$workspace_directory"
           cd "$workspace_directory"
-          go work init "$GITHUB_WORKSPACE/_ci/weave" "$GITHUB_WORKSPACE/gormgen" "$GITHUB_WORKSPACE/memory"
+          go work init "$GITHUB_WORKSPACE/gormgen" "$GITHUB_WORKSPACE/memory"
+          go work edit -replace github.com/imbrooklyn/weave="$GITHUB_WORKSPACE/_ci/weave"
           printf 'GOWORK=%s/go.work\n' "$workspace_directory" >> "$GITHUB_ENV"
 
       - name: Show Go version
@@ -132,7 +133,8 @@ jobs:
           workspace_directory="$RUNNER_TEMP/weave-adapters-workspace"
           mkdir -p "$workspace_directory"
           cd "$workspace_directory"
-          go work init "$GITHUB_WORKSPACE/_ci/weave" "$GITHUB_WORKSPACE/gormgen"
+          go work init "$GITHUB_WORKSPACE/gormgen"
+          go work edit -replace github.com/imbrooklyn/weave="$GITHUB_WORKSPACE/_ci/weave"
           printf 'GOWORK=%s/go.work\n' "$workspace_directory" >> "$GITHUB_ENV"
 
       - name: Run generated-DAO semantics on real MySQL and PostgreSQL
