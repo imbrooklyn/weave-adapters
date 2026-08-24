@@ -21,10 +21,8 @@
 /profiles/
 __debug_bin*
 
-# Local Go workspace files for this single-module project.
-/go.work
+# The root go.work is tracked; only its generated checksum file is local.
 /go.work.sum
-
 
 /tmp/
 
@@ -37,3 +35,6 @@ Thumbs.db
 .vscode/
 *.swp
 *.swo
+
+# CI-only dependency checkouts.
+/_ci/

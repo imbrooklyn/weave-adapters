@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-memory:
+    name: Memory development verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GOTOOLCHAIN: local
+    steps:
+      - name: Check out Adapter repository
+        uses: actions/checkout@v7
+
+      - name: Check out the pinned Weave core revision
+        uses: actions/checkout@v7
+        with:
+          repository: imbrooklyn/weave
+          ref: 14cad085c9c7ac12360cb1136651f9c2732aeccb
+          path: _ci/weave
+
+      - name: Set up Go 1.27
+        uses: actions/setup-go@v7
+        with:
+          go-version: "1.27.0"
+          cache: false
+
+      - name: Create an isolated dependency workspace
+        shell: bash
+        run: |
+          workspace_directory="$RUNNER_TEMP/weave-adapters-workspace"
+          mkdir -p "$workspace_directory"
+          cd "$workspace_directory"
+          go work init "$GITHUB_WORKSPACE/_ci/weave" "$GITHUB_WORKSPACE/memory"
+          printf 'GOWORK=%s/go.work\n' "$workspace_directory" >> "$GITHUB_ENV"
+
+      - name: Show Go version
+        run: go version
+
+      - name: Check repository metadata and modules
+        run: ./scripts/check-repository.sh
+
+      - name: Check formatting, tests, and vet
+        run: ./scripts/verify.sh
+
+      - name: Run the race detector
+        working-directory: memory
+        run: go test -race ./...
+
+      - name: Run the memory differential fuzz smoke test
+        working-directory: memory
+        run: go test -run '^$' -fuzz '^FuzzMemoryMatchesOracle$' -fuzztime=2s -parallel=2
+
+      - name: Compile and smoke-test memory benchmarks
+        working-directory: memory
+        run: go test -run '^$' -bench . -benchtime=1x
