@@ -37,7 +37,7 @@ jobs:
           workspace_directory="$RUNNER_TEMP/weave-adapters-workspace"
           mkdir -p "$workspace_directory"
           cd "$workspace_directory"
-          go work init "$GITHUB_WORKSPACE/gormgen" "$GITHUB_WORKSPACE/memory"
+          go work init "$GITHUB_WORKSPACE/gorm" "$GITHUB_WORKSPACE/gormgen" "$GITHUB_WORKSPACE/memory"
           go work edit -replace github.com/imbrooklyn/weave="$GITHUB_WORKSPACE/_ci/weave"
           printf 'GOWORK=%s/go.work\n' "$workspace_directory" >> "$GITHUB_ENV"
 
