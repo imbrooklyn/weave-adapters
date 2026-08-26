@@ -8,6 +8,7 @@ go_command="${GO_COMMAND:-go}"
 gofmt_command="${GOFMT_COMMAND:-gofmt}"
 
 "$script_dir/check-repository.sh"
+"$script_dir/check-module-zip_test.sh"
 
 unformatted="$(
   find "$repository_root" \

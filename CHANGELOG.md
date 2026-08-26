@@ -4,6 +4,14 @@ This file records notable user-visible changes to Weave Adapters. It follows the
 
 ## [Unreleased]
 
+### Changed
+
+- GORM and GORM Gen profiles now provide stable English diagnostic strings; Profile, memory State, and memory Ordering integer representations are explicitly non-protocol implementation details.
+
+### Fixed
+
+- Module-zip verification no longer reports a present LICENSE as missing when the archive contains later entries under `pipefail`.
+
 ## [memory/v0.1.0-alpha.1], [gormgen/v0.1.0-alpha.1], and [gorm/v0.1.0-alpha.1] - 2026-08-26
 
 ### Added

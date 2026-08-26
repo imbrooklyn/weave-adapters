@@ -29,6 +29,8 @@ An Accessor returns a value and exactly one state:
 
 The returned value is used only for `StateValue`. Zero and unrecognized State values produce `ErrInvalidState` during Condition execution. An Accessor is called once for each evaluated leaf, and no value is cached across nodes.
 
+`State.String()` and `Ordering.String()` return stable English diagnostic identifiers with deterministic `state(n)` and `ordering(n)` forms for unknown values. Their integer representations are implementation details, not persistence, serialization, or interchange protocols.
+
 `NEQ(field, value)` and `NotIn(field, values)` remain ordinary leaves, so they exclude null and missing fields. Group negation complements a complete match set: `NoneOf(EQ(field, value))` therefore includes records whose field is null or missing.
 
 ## Typed fields and semantics

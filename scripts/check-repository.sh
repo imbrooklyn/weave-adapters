@@ -17,6 +17,8 @@ fail() {
 [[ ! -L "$repository_root/LICENSE" ]] || fail "LICENSE must be a regular file"
 [[ -x "$repository_root/scripts/check-module-zip.sh" ]] ||
   fail "scripts/check-module-zip.sh must be executable"
+[[ -x "$repository_root/scripts/check-module-zip_test.sh" ]] ||
+  fail "scripts/check-module-zip_test.sh must be executable"
 
 expected_license_sha256="c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
 if command -v sha256sum >/dev/null 2>&1; then

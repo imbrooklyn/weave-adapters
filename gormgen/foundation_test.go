@@ -12,6 +12,27 @@ import (
 	"gorm.io/gorm/clause"
 )
 
+type definedGeneratedID int64
+
+func TestProfileDiagnostics(t *testing.T) {
+	for _, test := range []struct {
+		name    string
+		profile Profile
+		want    string
+	}{
+		{name: "mysql", profile: MySQL, want: "mysql"},
+		{name: "postgresql", profile: PostgreSQL, want: "postgresql"},
+		{name: "zero", profile: Profile(0), want: "profile(0)"},
+		{name: "unknown", profile: Profile(99), want: "profile(99)"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			if got := test.profile.String(); got != test.want {
+				t.Fatalf("Profile.String() = %q, want %q", got, test.want)
+			}
+		})
+	}
+}
+
 func TestNewCompilerValidatesProfileAndOptions(t *testing.T) {
 	for _, profile := range []Profile{MySQL, PostgreSQL} {
 		compiler, err := NewCompiler(profile)
@@ -91,6 +112,9 @@ func TestNewFieldSpecUsesGeneratedColumnAndEqSignature(t *testing.T) {
 
 	if _, err := NewFieldSpec[int64](fixture.User.Name); !errors.Is(err, weave.ErrInvalidValue) {
 		t.Fatalf("NewFieldSpec[int64](string field) error = %v, want ErrInvalidValue", err)
+	}
+	if _, err := NewFieldSpec[definedGeneratedID](fixture.User.ID); !errors.Is(err, weave.ErrInvalidValue) {
+		t.Fatalf("NewFieldSpec[definedGeneratedID](int64 field) error = %v, want ErrInvalidValue", err)
 	}
 	if _, err := NewFieldSpec[string](fixture.User.Name.Desc()); !errors.Is(err, weave.ErrInvalidField) {
 		t.Fatalf("NewFieldSpec(derived field) error = %v, want ErrInvalidField", err)

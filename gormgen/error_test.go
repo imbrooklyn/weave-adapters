@@ -99,6 +99,16 @@ func TestValidationRejectsValueApplicabilityAndRegistryViolations(t *testing.T) 
 			wantOperator: weave.OperatorEQ,
 		},
 		{
+			name:       "convertible defined value type",
+			newFactory: func() (*Factory, error) { return NewFactory(MySQL) },
+			build: func(builder *weave.Builder[Conditions, Expression]) {
+				builder.EQ(fixture.User.ID, definedGeneratedID(7))
+			},
+			wantSentinel: weave.ErrInvalidValue,
+			wantCode:     weave.CodeInvalidValue,
+			wantOperator: weave.OperatorEQ,
+		},
+		{
 			name:       "invalid membership element type",
 			newFactory: func() (*Factory, error) { return NewFactory(MySQL) },
 			build: func(builder *weave.Builder[Conditions, Expression]) {

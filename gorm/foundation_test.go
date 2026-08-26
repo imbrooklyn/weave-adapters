@@ -10,6 +10,25 @@ import (
 	"gorm.io/gorm/clause"
 )
 
+func TestProfileDiagnostics(t *testing.T) {
+	for _, test := range []struct {
+		name    string
+		profile Profile
+		want    string
+	}{
+		{name: "mysql", profile: MySQL, want: "mysql"},
+		{name: "postgresql", profile: PostgreSQL, want: "postgresql"},
+		{name: "zero", profile: Profile(0), want: "profile(0)"},
+		{name: "unknown", profile: Profile(99), want: "profile(99)"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			if got := test.profile.String(); got != test.want {
+				t.Fatalf("Profile.String() = %q, want %q", got, test.want)
+			}
+		})
+	}
+}
+
 func TestNewCompilerAndFactoryValidateProfile(t *testing.T) {
 	for _, profile := range []Profile{MySQL, PostgreSQL} {
 		compiler, err := NewCompiler(profile)

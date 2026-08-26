@@ -44,6 +44,8 @@ The integration suite pins and verifies these profile/backend combinations. The 
 | `MySQL` | `gorm.io/driver/mysql v1.6.0` | MySQL `8.0.40` | `utf8mb4_bin` |
 | `PostgreSQL` | `gorm.io/driver/postgres v1.6.0` | PostgreSQL `15.12` | `C` |
 
+`Profile.String()` returns the stable diagnostic identifiers `mysql` and `postgresql`; zero and unknown values use `profile(n)`. A Profile's integer representation is an implementation detail, not a persistence, serialization, or interchange protocol.
+
 Both profiles expose the same global Compiler capabilities:
 
 | Capability | Supported | Field requirement or boundary |

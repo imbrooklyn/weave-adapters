@@ -3,7 +3,9 @@ package memory
 import "strconv"
 
 // State describes whether an accessor found a value, an explicit null, or no
-// field at all. Its zero value is invalid.
+// field at all. Its zero value is invalid. Its numeric representation is an
+// implementation detail, not a persistence, serialization, or interchange
+// protocol.
 type State uint8
 
 const (
@@ -46,7 +48,9 @@ func (s State) String() string {
 // intended concurrency.
 type Accessor[R, V any] func(record R) (V, State)
 
-// Ordering is the result of a field-specific comparison.
+// Ordering is the result of a field-specific comparison. Its numeric
+// representation is an implementation detail, not a persistence,
+// serialization, or interchange protocol.
 type Ordering int8
 
 const (

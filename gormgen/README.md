@@ -46,6 +46,8 @@ A profile fixes SQL compilation semantics; it does not hold a database connectio
 | `MySQL` | MySQL `8.0.40` | `utf8mb4_bin` table and text columns |
 | `PostgreSQL` | PostgreSQL `15.12` | `COLLATE "C"` on identifier and text columns |
 
+`Profile.String()` returns the stable diagnostic identifiers `mysql` and `postgresql`; zero and unknown values use `profile(n)`. A Profile's integer representation is an implementation detail, not a persistence, serialization, or interchange protocol.
+
 The local integration runner locks the corresponding official container image digests. These versions are verified baselines, not a claim that every server version or deployment collation has identical behavior.
 
 ## Generated DAO usage
@@ -108,6 +110,15 @@ factory, err := gormgen.NewFactory(
 ```
 
 `T` must be directly assignable to the generated `Eq` argument type. The Compiler performs no reflection conversion, numeric narrowing, or string coercion. A non-empty operator list is a complete replacement set. Registered-fields-only mode requires at least one valid FieldSpec and rejects columns outside the immutable registry.
+
+For a generated `Eq(int64)` field, an application-defined `type UserID int64` is convertible but not assignable. Convert it explicitly at the call site:
+
+```go
+type UserID int64
+
+id := UserID(42)
+builder.EQ(queries.User.ID, int64(id))
+```
 
 Field descriptors and registries describe query type and applicability; they are not an authorization system.
 

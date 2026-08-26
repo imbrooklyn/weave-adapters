@@ -26,7 +26,10 @@ zip_path="$(
 module_path="${coordinate%@*}"
 version="${coordinate##*@}"
 license_entry="$module_path@$version/LICENSE"
-if ! unzip -Z1 "$zip_path" | grep -Fqx "$license_entry"; then
+if ! zip_entries="$(unzip -Z1 "$zip_path")"; then
+  fail "could not list entries in the module zip"
+fi
+if ! grep -Fqx "$license_entry" <<<"$zip_entries"; then
   fail "$license_entry is missing"
 fi
 
