@@ -148,7 +148,7 @@ Registered-fields-only mode can be used when an application needs a closed stand
 
 ## Known semantic boundaries
 
-SQL rows do not represent Weave's `missing` state separately from explicit `NULL`. The shared real-backend harness therefore materializes missing fixture values as SQL `NULL` and declares `DistinguishesMissing=false`. Direct `IsNull` and nullable `In` SQL-storage cases verify the resulting match sets separately.
+SQL rows do not represent Weave's `missing` state separately from explicit `NULL`. The shared real-backend harness therefore materializes missing fixture values as SQL `NULL` and declares `DistinguishesMissing=false`. The canonical `compilertest` cases select their missing-collapsed expected ID sets for direct `IsNull` and nullable `In`; only the case that identifies missing itself is skipped.
 
 Text equality, ordering, and LIKE behavior inherit the deployed database schema's collation and Unicode rules. The verified fixture controls those inputs with `utf8mb4_bin` on MySQL and `COLLATE "C"` on PostgreSQL; the Compiler does not promise to erase collation, normalization, case, or accent differences between arbitrary deployments.
 

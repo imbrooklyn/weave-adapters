@@ -57,7 +57,7 @@ Both profiles expose the same global Compiler capabilities:
 | Native condition | Yes | Root only; caller-owned Boolean WHERE expression. |
 | Expr | Yes | Nestable; caller-owned Boolean WHERE expression. |
 
-SQL storage has no separate missing state: missing and explicit NULL collapse to SQL NULL. The shared suite therefore runs the common value/NULL cases and adds SQL-specific NULL and nullable-membership cases; the `memory` Adapter remains the reference for a distinct missing state.
+SQL storage has no separate missing state: missing and explicit NULL collapse to SQL NULL. The shared suite selects canonical missing-collapsed expected ID sets for its NULL and nullable-membership cases; only the case that identifies missing itself is skipped. The `memory` Adapter remains the reference for a distinct missing state.
 
 ## Native GORM type boundary
 

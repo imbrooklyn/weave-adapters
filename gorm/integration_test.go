@@ -221,7 +221,7 @@ func runIntegrationProfile(
 	if inspectionCalls.Load() == 0 {
 		t.Fatal("compilertest did not inspect compiled SQL conditions")
 	}
-	runSQLStorageCases(t, factory, number, nullableNumber, execute)
+	runSQLStorageCases(t, factory, number, execute)
 	runInjectionProbe(t, profile.profile, factory, text, database, execute)
 	if traditionalCalls.Load() == 0 || genericCalls.Load() == 0 ||
 		traditionalCalls.Load() != genericCalls.Load() {
@@ -366,7 +366,7 @@ func inspectIntegrationCondition(
 		return fmt.Errorf("SQL for %q has no fixed ESCAPE clause", caseName)
 	}
 	switch caseName {
-	case "constant true root", "constant false empty any", "not null means value":
+	case "constant true root", "constant false empty any", "explicit null only", "not null means value":
 	default:
 		if len(statement.Vars) == 0 {
 			return fmt.Errorf("SQL for %q has no bound query value", caseName)
@@ -379,7 +379,6 @@ func runSQLStorageCases(
 	t *testing.T,
 	factory *Factory,
 	number Field[int64],
-	nullableNumber Field[int64],
 	execute func(Condition) ([]string, error),
 ) {
 	t.Helper()
@@ -426,29 +425,6 @@ func runSQLStorageCases(
 			assertIntegrationIDs(t, execute, condition, test.want)
 		})
 	}
-	t.Run("SQL storage null and missing collapse", func(t *testing.T) {
-		condition, err := factory.New().IsNull(nullableNumber).Build()
-		if err != nil {
-			t.Fatalf("Build(IsNull): %v", err)
-		}
-		assertIntegrationIDs(t, execute, condition, []string{"r03", "r04"})
-	})
-	t.Run("nullable In includes SQL null", func(t *testing.T) {
-		two := int64(2)
-		condition, err := factory.New().In(
-			nullableNumber,
-			[]*int64{&two, nil, &two},
-		).Build()
-		if err != nil {
-			t.Fatalf("Build(nullable In): %v", err)
-		}
-		assertIntegrationIDs(
-			t,
-			execute,
-			condition,
-			[]string{"r02", "r03", "r04", "r06"},
-		)
-	})
 	t.Run("eight-level group nesting", func(t *testing.T) {
 		condition, err := factory.New().AllOf(func(group *Group) {
 			addDeepAllOf(group, number, 8)
