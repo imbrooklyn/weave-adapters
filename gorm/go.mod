@@ -3,7 +3,7 @@ module github.com/imbrooklyn/weave-adapters/gorm
 go 1.27
 
 require (
-	github.com/imbrooklyn/weave v0.1.0
+	github.com/imbrooklyn/weave v0.1.0-alpha.1
 	gorm.io/driver/mysql v1.6.0
 	gorm.io/driver/postgres v1.6.0
 	gorm.io/gorm v1.31.2

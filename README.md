@@ -6,7 +6,7 @@ Weave Adapters contains backend compilers for [Weave](https://github.com/imbrook
 
 This repository is in pre-release development. It currently contains the `memory` reference Compiler, the `gormgen` GORM Gen Compiler, and the native `gorm` Compiler described below.
 
-The compatible Weave core line has not been tagged yet, so the modules are not independently resolvable with `GOWORK=off`. Development CI uses the public core revision pinned in its workflow; that pin must identify a revision containing the required public APIs. Public module files contain no local `replace` directives.
+The modules require the published Weave core prerelease `v0.1.0-alpha.1` and are independently resolvable with `GOWORK=off`. Development CI also pins that release's exact core revision. Public module files contain no local `replace` directives.
 
 ## Modules
 
@@ -40,14 +40,14 @@ The GORM Gen and native GORM modules provide `gormgen/scripts/test-integration.s
 After a tagged module version is resolvable, verify the released artifact's inherited license with:
 
 ```sh
-./scripts/check-module-zip.sh github.com/imbrooklyn/weave-adapters/memory@v0.1.0
+./scripts/check-module-zip.sh github.com/imbrooklyn/weave-adapters/memory@v0.1.0-alpha.1
 ```
 
 The check downloads the actual module zip and requires its root `LICENSE` to be the complete Apache-2.0 text.
 
 ## Versioning
 
-Each Adapter module is versioned independently. A module release uses a subdirectory tag such as `memory/v0.1.0`; a repository-root tag does not imply that every Adapter has the same version.
+Each Adapter module is versioned independently. A module release uses a subdirectory tag such as `memory/v0.1.0-alpha.1`; a repository-root tag does not imply that every Adapter has the same version.
 
 ## Security
 

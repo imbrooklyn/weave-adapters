@@ -25,7 +25,7 @@ Both profiles advertise all 14 standard operators, Native conditions, and Expr. 
 | Component | Version |
 | --- | --- |
 | Go | `1.27` |
-| Weave | `v0.1.0` module requirement |
+| Weave | `v0.1.0-alpha.1` module requirement |
 | GORM Gen | `v0.3.28` |
 | GORM | `v1.31.2` |
 | GORM MySQL driver | `v1.6.0` |
@@ -35,7 +35,7 @@ Both profiles advertise all 14 standard operators, Native conditions, and Expr. 
 
 GORM Gen `v0.3.28` declares older DBResolver and `x/tools` versions. This module pins the versions in the table because the complete graph is compile-verified with Go 1.27 and GORM `v1.31.2`.
 
-The compatible Weave core line has not been tagged. Consequently, the module cannot yet pass an independent `GOWORK=off` dependency test even though its `go.mod` contains no local `replace` directive.
+The Weave core prerelease in the table is published and independently resolvable with `GOWORK=off`. This module's `go.mod` contains no local `replace` directive.
 
 ## Profiles and verified backends
 

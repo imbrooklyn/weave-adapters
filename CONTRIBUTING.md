@@ -9,7 +9,7 @@ Thank you for helping improve Weave Adapters. Contributions should keep each Ada
 - Bash for repository scripts.
 - Any service required by the Adapter being changed.
 
-The current memory module depends on a Weave core line that has not been tagged. Its standalone `GOWORK=off` dependency check is therefore not yet available. Development CI uses the pinned public Weave revision shown in the workflow; it does not add a `replace` directive to the module.
+The current modules require the published Weave core prerelease `v0.1.0-alpha.1`. Standalone verification must use `GOWORK=off`; development CI additionally pins the exact released core revision and does not add a `replace` directive to a module.
 
 ## Make a focused change
 

@@ -28,12 +28,12 @@ A valid `Compiler` advertises all standard operators plus `FeatureNativeConditio
 | Component | Version |
 | --- | --- |
 | Go | `1.27` |
-| Weave | `v0.1.0` module requirement |
+| Weave | `v0.1.0-alpha.1` module requirement |
 | GORM | `v1.31.2` |
 | GORM MySQL driver | `v1.6.0` |
 | GORM PostgreSQL driver | `v1.6.0` |
 
-The compatible Weave core line has not been tagged. Consequently, the module cannot yet pass an independent `GOWORK=off` dependency test even though its `go.mod` contains no local `replace` directive.
+The Weave core prerelease in the table is published and independently resolvable with `GOWORK=off`. This module's `go.mod` contains no local `replace` directive.
 
 ## Compatibility and capabilities
 

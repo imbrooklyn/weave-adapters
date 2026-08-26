@@ -112,12 +112,12 @@ go test -run '^$' -fuzz '^FuzzMemoryMatchesOracle$' -fuzztime=10s
 
 `Compiler[R]` contains no records, request state, database handle, collection, session, context, logger, or transaction. It can be reused concurrently when all borrowed functions and captured state follow their concurrency contracts. Compiled Conditions receive records only when evaluated.
 
-The compatible Weave core line has not been tagged. Consequently, the module cannot yet pass an independent `GOWORK=off` dependency test even though its `go.mod` contains no local `replace` directive.
+This module requires the published Weave core prerelease `v0.1.0-alpha.1` and can resolve it independently with `GOWORK=off`. Its `go.mod` contains no local `replace` directive.
 
 ## Requirements
 
 - Go 1.27 or newer.
-- A compatible Weave core dependency.
+- Weave core `v0.1.0-alpha.1`.
 
 ## License
 

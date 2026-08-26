@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           repository: imbrooklyn/weave
-          ref: 14cad085c9c7ac12360cb1136651f9c2732aeccb
+          ref: 03750fbdb1289566e667fdf964e6732deaa136a6
           path: _ci/weave
 
       - name: Set up Go 1.27
@@ -118,7 +118,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           repository: imbrooklyn/weave
-          ref: 14cad085c9c7ac12360cb1136651f9c2732aeccb
+          ref: 03750fbdb1289566e667fdf964e6732deaa136a6
           path: _ci/weave
 
       - name: Set up Go 1.27
