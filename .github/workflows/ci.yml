@@ -37,7 +37,7 @@ jobs:
           workspace_directory="$RUNNER_TEMP/weave-adapters-workspace"
           mkdir -p "$workspace_directory"
           cd "$workspace_directory"
-          go work init "$GITHUB_WORKSPACE/gorm" "$GITHUB_WORKSPACE/gormgen" "$GITHUB_WORKSPACE/memory"
+          go work init "$GITHUB_WORKSPACE/goqu" "$GITHUB_WORKSPACE/gorm" "$GITHUB_WORKSPACE/gormgen" "$GITHUB_WORKSPACE/memory"
           go work edit -replace github.com/imbrooklyn/weave="$GITHUB_WORKSPACE/_ci/weave"
           printf 'GOWORK=%s/go.work\n' "$workspace_directory" >> "$GITHUB_ENV"
 
@@ -60,6 +60,18 @@ jobs:
       - name: Run the GORM Gen race detector
         working-directory: gormgen
         run: go test -race ./...
+
+      - name: Run the goqu race detector
+        working-directory: goqu
+        run: go test -race ./...
+
+      - name: Run the goqu prepared-SQL fuzz smoke test
+        working-directory: goqu
+        run: go test -run '^$' -fuzz '^FuzzCompilePreparedLiteralText$' -fuzztime=2s -parallel=2
+
+      - name: Compile and smoke-test goqu benchmarks
+        working-directory: goqu
+        run: go test -run '^$' -bench . -benchtime=1x
 
       - name: Compile and smoke-test GORM Gen benchmarks
         working-directory: gormgen

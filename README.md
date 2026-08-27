@@ -4,7 +4,7 @@ Weave Adapters contains backend compilers for [Weave](https://github.com/imbrook
 
 ## Status
 
-This repository is in pre-release development. It currently contains the `memory` reference Compiler, the `gormgen` GORM Gen Compiler, and the native `gorm` Compiler described below.
+This repository is in pre-release development. It currently contains the `memory` reference Compiler and the `gormgen`, native `gorm`, and `goqu` SQL Compilers described below.
 
 The modules require the published Weave core prerelease `v0.1.0-alpha.1` and are independently resolvable with `GOWORK=off`. Development CI also pins that release's exact core revision. Public module files contain no local `replace` directives.
 
@@ -12,6 +12,7 @@ The modules require the published Weave core prerelease `v0.1.0-alpha.1` and are
 
 | Module | Current behavior |
 | --- | --- |
+| [`goqu`](goqu/) | Compiles every standard operator and Boolean group into native goqu expressions, with canonical typed fields, immutable MySQL/PostgreSQL profiles, SQL NULL totalization, fixed parameterized literal-text lowering, root Native and nestable Expr support, stable two-pass validation/emission, deterministic concurrent compilation, prepared SQL/argument safety checks, and real MySQL/PostgreSQL shared semantic coverage. |
 | [`gorm`](gorm/) | Compiles every standard operator and Boolean group into one native `clause.Expression`, with typed non-raw fields, SQL NULL totalization, fixed parameterized literal-text lowering, root Native and nestable Expr support, stable two-pass validation/emission, traditional/generic GORM execution, DryRun SQL/Vars checks, and real MySQL/PostgreSQL shared semantic coverage. |
 | [`gormgen`](gormgen/) | Compiles every standard operator and Boolean group into parameterized GORM Gen conditions, with pure-column metadata, immutable FieldSpec/registry configuration, Native/Expr support, generated-DAO coverage, and real MySQL/PostgreSQL semantic tests. |
 | [`memory`](memory/) | Compiles every standard operator, Boolean group, constant, Native condition, and Expr into a record-level condition while preserving value, explicit-null, and missing semantics. |
@@ -36,6 +37,10 @@ With all module dependencies resolvable in the active Go environment, run:
 The script checks formatting and runs tests and `go vet` for every existing Adapter module. It discovers modules from the repository instead of naming modules that have not been created.
 
 The GORM Gen and native GORM modules provide `gormgen/scripts/test-integration.sh` and `gorm/scripts/test-integration.sh`. Each runs its shared semantic fixture against temporary real MySQL and PostgreSQL containers and removes the containers and their tmpfs data on exit.
+
+The integration testbed runs the goqu module's prepared queries against the
+same real MySQL and PostgreSQL fixture and requires its record-ID match sets to
+agree with memory, GORM Gen, and GORM.
 
 After a tagged module version is resolvable, verify the released artifact's inherited license with:
 

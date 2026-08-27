@@ -4,6 +4,10 @@ This file records notable user-visible changes to Weave Adapters. It follows the
 
 ## [Unreleased]
 
+### Added
+
+- The `goqu` Compiler with a locked `[]exp.Expression`/`exp.Expression` boundary, canonical typed fields, immutable MySQL/PostgreSQL profiles, exact field applicability, all standard operators and Boolean groups, SQL NULL totalization, fixed parameterized literal-text lowering, root Native and nestable Expr support, stable two-pass validation/emission, deterministic concurrent compilation, prepared SQL/argument safety coverage, fuzz and benchmark baselines, retained goqu MIT attribution, and real MySQL/PostgreSQL shared semantic validation.
+
 ### Changed
 
 - GORM and GORM Gen profiles now provide stable English diagnostic strings; Profile, memory State, and memory Ordering integer representations are explicitly non-protocol implementation details.
