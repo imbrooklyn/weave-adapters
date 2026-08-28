@@ -4,7 +4,7 @@ Weave Adapters contains backend compilers for [Weave](https://github.com/imbrook
 
 ## Status
 
-This repository is in pre-release development. It currently contains the `memory` reference Compiler and the `gormgen`, native `gorm`, and `goqu` SQL Compilers described below.
+This repository is in pre-release development. It currently contains the `memory` reference Compiler; the `gormgen`, native `gorm`, and `goqu` SQL Compilers; and the MongoDB BSON Compiler described below.
 
 The modules require the published Weave core prerelease `v0.1.0-alpha.1` and are independently resolvable with `GOWORK=off`. Development CI also pins that release's exact core revision. Public module files contain no local `replace` directives.
 
@@ -12,6 +12,7 @@ The modules require the published Weave core prerelease `v0.1.0-alpha.1` and are
 
 | Module | Current behavior |
 | --- | --- |
+| [`mongo`](mongo/) | Compiles every standard operator and Boolean group into deterministic ordered BSON filters for the immutable MongoDB 6.0+ profile, with typed safe field paths, explicit existence/non-null totalization, exact null/missing shapes, quoted literal-text PCRE patterns, root Native and nestable opaque Expr support, stable two-pass validation/emission, redacted BSON preflight failures, shallow escape-hatch cloning, and deterministic concurrent compilation. |
 | [`goqu`](goqu/) | Compiles every standard operator and Boolean group into native goqu expressions, with canonical typed fields, immutable MySQL/PostgreSQL profiles, SQL NULL totalization, fixed parameterized literal-text lowering, root Native and nestable Expr support, stable two-pass validation/emission, deterministic concurrent compilation, prepared SQL/argument safety checks, and real MySQL/PostgreSQL shared semantic coverage. |
 | [`gorm`](gorm/) | Compiles every standard operator and Boolean group into one native `clause.Expression`, with typed non-raw fields, SQL NULL totalization, fixed parameterized literal-text lowering, root Native and nestable Expr support, stable two-pass validation/emission, traditional/generic GORM execution, DryRun SQL/Vars checks, and real MySQL/PostgreSQL shared semantic coverage. |
 | [`gormgen`](gormgen/) | Compiles every standard operator and Boolean group into parameterized GORM Gen conditions, with pure-column metadata, immutable FieldSpec/registry configuration, Native/Expr support, generated-DAO coverage, and real MySQL/PostgreSQL semantic tests. |

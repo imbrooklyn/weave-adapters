@@ -6,6 +6,7 @@ This file records notable user-visible changes to Weave Adapters. It follows the
 
 ### Added
 
+- The `mongo` Compiler as an independent Go 1.27 module, with an immutable MongoDB 6.0+ profile, locked MongoDB Go Driver v2.8.2 BSON boundary, typed safe field paths, all standard operators and Boolean groups, explicit existence/non-null totalization, exact null/missing shapes, quoted literal-text PCRE patterns with absolute anchors, root Native and nestable opaque Expr support, stable two-pass validation/emission, deterministic ordered BSON, redacted default-registry preflight failures, shallow escape-hatch cloning, concurrency, fuzz, and benchmark coverage, real MongoDB 6.0.28/8.3.8 final-match-set validation, and retained upstream license attribution.
 - The `goqu` Compiler with a locked `[]exp.Expression`/`exp.Expression` boundary, canonical typed fields, immutable MySQL/PostgreSQL profiles, exact field applicability, all standard operators and Boolean groups, SQL NULL totalization, fixed parameterized literal-text lowering, root Native and nestable Expr support, stable two-pass validation/emission, deterministic concurrent compilation, prepared SQL/argument safety coverage, fuzz and benchmark baselines, retained goqu MIT attribution, and real MySQL/PostgreSQL shared semantic validation.
 
 ### Changed
