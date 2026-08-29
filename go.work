@@ -4,6 +4,7 @@ use (
 	./goqu
 	./gorm
 	./gormgen
+	./ldap
 	./memory
 	./mongo
 )

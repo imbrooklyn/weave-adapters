@@ -16,7 +16,7 @@ The module currently provides:
 - Root-only Native condition slices and nestable borrowed `field.Expr` values.
 - Fixed internal SQL templates whose columns and query values are passed only as GORM variables.
 - Non-NULL guards for ordinary leaves and literal LIKE escaping with `ESCAPE '!'`.
-- A reproducible generated DAO fixture, a compile-checked `Where(conditions...)` usage package, and real MySQL/PostgreSQL semantic coverage through Weave's shared `compilertest` fixture.
+- A reproducible generated DAO fixture, a compile-checked `Where(conditions...)` usage package, bound-variable fuzz coverage, and real MySQL/PostgreSQL semantic coverage through Weave's shared `compilertest` fixture.
 
 Both profiles advertise all 14 standard operators, Native conditions, and Expr. Field-level applicability is narrower and is reported through `CapabilitiesFor`.
 
@@ -177,6 +177,13 @@ go vet ./...
 ```
 
 The fixture's usage package calls the real generated `Where(conditions...).Find()` signature; it does not substitute handwritten field or DAO types. Structural SQL/Vars checks cover both locked drivers in DryRun mode.
+
+Fuzz generated-field compilation and final generated-DAO SQL/Vars binding for
+both profiles with:
+
+```sh
+go test -run '^$' -fuzz '^FuzzGeneratedDAOBindsLiteralText$' -fuzztime=10s
+```
 
 Run the semantic suite against temporary real databases with:
 

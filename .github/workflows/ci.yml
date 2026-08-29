@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   verify-modules:
-    name: Adapter development verification
+    name: Current-core workspace verification
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           repository: imbrooklyn/weave
-          ref: 03750fbdb1289566e667fdf964e6732deaa136a6
+          ref: afbd6ad7c03266f52c52753cdb9ddbbb3ad7f6f8
           path: _ci/weave
 
       - name: Set up Go 1.27
@@ -37,7 +37,7 @@ jobs:
           workspace_directory="$RUNNER_TEMP/weave-adapters-workspace"
           mkdir -p "$workspace_directory"
           cd "$workspace_directory"
-          go work init "$GITHUB_WORKSPACE/goqu" "$GITHUB_WORKSPACE/gorm" "$GITHUB_WORKSPACE/gormgen" "$GITHUB_WORKSPACE/memory"
+          go work init "$GITHUB_WORKSPACE/goqu" "$GITHUB_WORKSPACE/gorm" "$GITHUB_WORKSPACE/gormgen" "$GITHUB_WORKSPACE/ldap" "$GITHUB_WORKSPACE/memory" "$GITHUB_WORKSPACE/mongo"
           go work edit -replace github.com/imbrooklyn/weave="$GITHUB_WORKSPACE/_ci/weave"
           printf 'GOWORK=%s/go.work\n' "$workspace_directory" >> "$GITHUB_ENV"
 
@@ -57,37 +57,78 @@ jobs:
           git diff --exit-code -- internal/fixture/query
           go test ./internal/fixture/usage
 
-      - name: Run the GORM Gen race detector
-        working-directory: gormgen
-        run: go test -race ./...
+  verify-independent-modules:
+    name: GOWORK=off ${{ matrix.module }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        module: [memory, gormgen, gorm, goqu, mongo, ldap]
+    env:
+      GOTOOLCHAIN: local
+      GOWORK: "off"
+    steps:
+      - name: Check out Adapter repository
+        uses: actions/checkout@v7
 
-      - name: Run the goqu race detector
-        working-directory: goqu
-        run: go test -race ./...
+      - name: Set up Go 1.27
+        uses: actions/setup-go@v7
+        with:
+          go-version: "1.27.0"
+          cache: false
 
-      - name: Run the goqu prepared-SQL fuzz smoke test
-        working-directory: goqu
-        run: go test -run '^$' -fuzz '^FuzzCompilePreparedLiteralText$' -fuzztime=2s -parallel=2
+      - name: Show Go version
+        run: go version
 
-      - name: Compile and smoke-test goqu benchmarks
-        working-directory: goqu
-        run: go test -run '^$' -bench . -benchtime=1x
+      - name: Verify the independent module boundary
+        working-directory: ${{ matrix.module }}
+        run: |
+          go mod verify
+          go mod tidy -diff
+          go test -mod=readonly ./...
+          go test -mod=readonly -race ./...
+          go vet -mod=readonly ./...
+          go test -mod=readonly -run '^$' -bench . -benchtime=1x
 
-      - name: Compile and smoke-test GORM Gen benchmarks
-        working-directory: gormgen
-        run: go test -run '^$' -bench . -benchtime=1x
+  fuzz-smoke:
+    name: Fuzz ${{ matrix.module }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - module: memory
+            target: ^FuzzMemoryMatchesOracle$
+          - module: gormgen
+            target: ^FuzzGeneratedDAOBindsLiteralText$
+          - module: gorm
+            target: ^FuzzCompileLiteralText$
+          - module: goqu
+            target: ^FuzzCompilePreparedLiteralText$
+          - module: mongo
+            target: ^FuzzLiteralTextAlwaysStaysARegexString$
+          - module: ldap
+            target: ^FuzzParseFilterCanonicalization$
+          - module: ldap
+            target: ^FuzzCompileLiteralEscapingAndRedaction$
+    env:
+      GOTOOLCHAIN: local
+      GOWORK: "off"
+    steps:
+      - name: Check out Adapter repository
+        uses: actions/checkout@v7
 
-      - name: Run the race detector
-        working-directory: memory
-        run: go test -race ./...
+      - name: Set up Go 1.27
+        uses: actions/setup-go@v7
+        with:
+          go-version: "1.27.0"
+          cache: false
 
-      - name: Run the memory differential fuzz smoke test
-        working-directory: memory
-        run: go test -run '^$' -fuzz '^FuzzMemoryMatchesOracle$' -fuzztime=2s -parallel=2
-
-      - name: Compile and smoke-test memory benchmarks
-        working-directory: memory
-        run: go test -run '^$' -bench . -benchtime=1x
+      - name: Run fuzz smoke test
+        working-directory: ${{ matrix.module }}
+        run: go test -mod=readonly -run '^$' -fuzz '${{ matrix.target }}' -fuzztime=2s -parallel=2
 
   verify-gormgen-integration:
     name: GORM Gen real backend semantics
@@ -130,7 +171,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           repository: imbrooklyn/weave
-          ref: 03750fbdb1289566e667fdf964e6732deaa136a6
+          ref: afbd6ad7c03266f52c52753cdb9ddbbb3ad7f6f8
           path: _ci/weave
 
       - name: Set up Go 1.27
