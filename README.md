@@ -4,14 +4,15 @@ Weave Adapters contains backend compilers for [Weave](https://github.com/imbrook
 
 ## Status
 
-This repository is in pre-release development. It currently contains the `memory` reference Compiler; the `gormgen`, native `gorm`, and `goqu` SQL Compilers; the MongoDB BSON Compiler; and the LDAP RFC 4515 filter Compiler described below.
+This repository is in pre-release development. It currently contains the `memory` reference Compiler; the `gormgen`, native `gorm`, and `goqu` SQL Compilers; the MongoDB BSON Compiler; the LDAP RFC 4515 filter Compiler; and the Elasticsearch typed-query Compiler described below.
 
-The module files require the published Weave core prerelease `v0.1.0-alpha.1` and are independently resolvable with `GOWORK=off`. Development CI tests all six modules together against an exact current public core revision and also tests every declared module boundary independently with `GOWORK=off`. Public module files contain no local `replace` directives.
+The module files require the published Weave core prerelease `v0.1.0-alpha.1` and are independently resolvable with `GOWORK=off`. Development CI tests all seven modules together against an exact current public core revision and also tests every declared module boundary independently with `GOWORK=off`. Public module files contain no local `replace` directives.
 
 ## Modules
 
 | Module | Current behavior |
 | --- | --- |
+| [`elasticsearch`](elasticsearch/) | Compiles applicable standard operators, constants, and all four Boolean Logic forms into official go-elasticsearch v9.5.1 typed queries, with stable two-pass validation/emission, immutable Elasticsearch 9.5 Profile and Mapping declarations, exact field identity and capabilities, exists/null-marker totalization, literal wildcard escaping, root Native and nestable upstream Expr support, analyzed/multi-valued/nested exclusions, and real Elasticsearch 9.5.2 match-set validation. |
 | [`ldap`](ldap/) | Compiles the exact LDAP-applicable standard-operator subset into deterministic RFC 4515 filters, with immutable typed Schema descriptors, numeric attribute OIDs, explicit presence totalization, no portable IsNull or approximate strict ordering, root Schema-bound Native filters, validated nestable string Expr filters, redacted two-pass compilation, and real OpenLDAP 2.6.10 match-set validation. |
 | [`mongo`](mongo/) | Compiles every standard operator and Boolean group into deterministic ordered BSON filters for the immutable MongoDB 6.0+ profile, with typed safe field paths, explicit existence/non-null totalization, exact null/missing shapes, quoted literal-text PCRE patterns, root Native and nestable opaque Expr support, stable two-pass validation/emission, redacted BSON preflight failures, shallow escape-hatch cloning, and deterministic concurrent compilation. |
 | [`goqu`](goqu/) | Compiles every standard operator and Boolean group into native goqu expressions, with canonical typed fields, immutable MySQL/PostgreSQL profiles, SQL NULL totalization, fixed parameterized literal-text lowering, root Native and nestable Expr support, stable two-pass validation/emission, deterministic concurrent compilation, prepared SQL/argument safety checks, and real MySQL/PostgreSQL shared semantic coverage. |
@@ -36,7 +37,7 @@ With all module dependencies resolvable in the active Go environment, run:
 ./scripts/verify.sh
 ```
 
-The script checks formatting and runs tests and `go vet` for every existing Adapter module. It discovers modules from the repository instead of naming modules that have not been created. With workspace resolution disabled, CI additionally runs module verification, tidy checks, tests, race tests, vet, and benchmark smoke tests for all six modules. Every Adapter suite has a fuzz-smoke entry; LDAP runs separate grammar/canonicalization and literal escaping/redaction targets.
+The script checks formatting and runs tests and `go vet` for every existing Adapter module. It discovers modules from the repository instead of naming modules that have not been created. With workspace resolution disabled, CI additionally runs module verification, tidy checks, tests, race tests, vet, and benchmark smoke tests for all seven modules. Every Adapter suite has a fuzz-smoke entry; LDAP and Elasticsearch run separate grammar or escaping targets and compile/redaction targets.
 
 The GORM Gen and native GORM modules provide `gormgen/scripts/test-integration.sh` and `gorm/scripts/test-integration.sh`. Each runs its shared semantic fixture against temporary real MySQL and PostgreSQL containers and removes the containers and their tmpfs data on exit.
 

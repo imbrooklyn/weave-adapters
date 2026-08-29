@@ -37,7 +37,7 @@ jobs:
           workspace_directory="$RUNNER_TEMP/weave-adapters-workspace"
           mkdir -p "$workspace_directory"
           cd "$workspace_directory"
-          go work init "$GITHUB_WORKSPACE/goqu" "$GITHUB_WORKSPACE/gorm" "$GITHUB_WORKSPACE/gormgen" "$GITHUB_WORKSPACE/ldap" "$GITHUB_WORKSPACE/memory" "$GITHUB_WORKSPACE/mongo"
+          go work init "$GITHUB_WORKSPACE/elasticsearch" "$GITHUB_WORKSPACE/goqu" "$GITHUB_WORKSPACE/gorm" "$GITHUB_WORKSPACE/gormgen" "$GITHUB_WORKSPACE/ldap" "$GITHUB_WORKSPACE/memory" "$GITHUB_WORKSPACE/mongo"
           go work edit -replace github.com/imbrooklyn/weave="$GITHUB_WORKSPACE/_ci/weave"
           printf 'GOWORK=%s/go.work\n' "$workspace_directory" >> "$GITHUB_ENV"
 
@@ -64,7 +64,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        module: [memory, gormgen, gorm, goqu, mongo, ldap]
+        module: [memory, gormgen, gorm, goqu, mongo, ldap, elasticsearch]
     env:
       GOTOOLCHAIN: local
       GOWORK: "off"
@@ -113,6 +113,10 @@ jobs:
             target: ^FuzzParseFilterCanonicalization$
           - module: ldap
             target: ^FuzzCompileLiteralEscapingAndRedaction$
+          - module: elasticsearch
+            target: ^FuzzEscapeWildcardLiteral$
+          - module: elasticsearch
+            target: ^FuzzCompileLiteralAndRedaction$
     env:
       GOTOOLCHAIN: local
       GOWORK: "off"
